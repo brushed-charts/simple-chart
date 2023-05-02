@@ -9,7 +9,12 @@ class ChartCoordinate {
   final List<ChartEntry> inputData;
   final Size canvasSize;
 
-  // Offset toScreenCoordinate(int dataIndex) {}
+  Offset toCanvasCoordinate({required int fromDataIndex}) {
+    final x = calculateX(atIndex: fromDataIndex);
+    final y = calculateY(yDataValue: inputData[fromDataIndex]['value']);
+    print(y);
+    return Offset(x, y);
+  }
 
   double calculateX({required int atIndex}) {
     assert(atIndex >= 0);
@@ -18,7 +23,12 @@ class ChartCoordinate {
     return interval * atIndex;
   }
 
-  double calculateY({required double yDataValue}) {}
+  double calculateY({required double yDataValue}) {
+    final dataAxis = getMax() - getMin();
+    final chartAxis = canvasSize.height;
+    final scale = chartAxis / dataAxis;
+    return (yDataValue - getMin()) * scale;
+  }
 
   double getMax() => inputData
       .map((element) => element['value'] as double)
@@ -32,6 +42,4 @@ class ChartCoordinate {
     if (inputData.length > 1) return;
     throw StateError("Chart input data must have a length greater than 1");
   }
-
-  // double calculateYPosition() {}
 }
